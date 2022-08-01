@@ -94,22 +94,22 @@ def init():
     window_title = "pyopengl rotate test"
     pygame.display.set_mode(screen_size, HWSURFACE | OPENGL | DOUBLEBUF)
     pygame.display.set_caption(window_title)
+    glEnable(GL_CULL_FACE)
 
     glViewport(0, 0, screen_size[0], screen_size[1])
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
 
+    global img, img_rect, img2, img2_rect
     img = pygame.image.load("images/image.png")
     img_rect = img.get_rect(center = (screen_size[0]/2, screen_size[1]/2))
+    img2 = pygame.image.load("images/back2.png")
+    img2_rect = img.get_rect(center = (screen_size[0]/2, screen_size[1]/2))
+    global screen
     screen = pygame.Surface(screen_size)
     screen.blit(img, img_rect)
-    textureData = pygame.image.tostring(screen, "RGB", True)
-    width = screen.get_width()
-    height = screen.get_height()
-
-    texID = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, texID)
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData)
+    
+    picture_exchange()
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
@@ -137,7 +137,15 @@ def clear(color=(0, 0, 0)):
     glClearColor(color[0] / 255, color[1] / 255, color[2] / 255, color[3] / 255 if len(color) > 3 else 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+def picture_exchange():
+    textureData = pygame.image.tostring(screen, "RGB", True)
+    width = screen.get_width()
+    height = screen.get_height()
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData)
+
+
 def render():
+    picture_exchange()
     glDrawArrays(GL_QUADS, 0, 4)
 
 def rotatewindow():
@@ -159,7 +167,7 @@ def rotatewindow():
     go_to_save = False
     go_to_load = False
     spd_collect = 0
-    angle_spd = 1
+    angle_spd = 2
     flip_spd = 10
     quick_save = False
     has_save = False
@@ -277,10 +285,17 @@ def rotatewindow():
                 spd_collect = 0
                 if flip_time >=2:
                     flip_twice = False
-        glRotatef(angle, 0, 0, 0.5)
-        glDrawArrays(GL_QUADS, 0, 4)
-        render()
+        
         clear()
+        glCullFace(GL_BACK)
+        screen.blit(img2, img_rect)
+        render()
+        glCullFace(GL_FRONT)
+        screen.blit(img, img_rect)
+        render()
+
+        # render()
+        # clear()
 
 if __name__ == '__main__':
     move = False
