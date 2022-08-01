@@ -1,0 +1,28 @@
+It's based on pyopengl. You can rotate your 2D image in this tool.
+Rotate with x, y, z Axis.
+
+with a tkinter tool you can save your set into file. And load it.
+
+input hint:
+W : add X rotate.
+S : subtract X rotate.
+A : add Y rotate.
+D : subtract Y rotate.
+Z : add Z rotate.
+X : subtract Z rotate.
+
+q to rotate z a round.
+e to rotate xz a round.
+t to rotate special angle a round.
+r to flip both side.
+
+0 : quick save
+9 : quick load
+
+1 : reset to normal angle and pos
+2 : save in ram
+3 : load in ram
+
+tkinter:
+you need to use slide bar and press button to change rotate angle.
+then use enter to rotate angle you set.
