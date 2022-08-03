@@ -106,8 +106,9 @@ def init():
     img2 = pygame.image.load("images/back2.png")
     img2_rect = img.get_rect(center = (screen_size[0]/2, screen_size[1]/2))
     global screen
-    screen = pygame.Surface(screen_size)
-    screen.blit(img, img_rect)
+    screen = pygame.Surface(screen_size, SRCALPHA)
+    # screen.set_alpha(0)
+    # screen.blit(img, img_rect)
     
     picture_exchange()
 
@@ -129,8 +130,10 @@ def init():
 
     global texLocation
     texLocation = glGetUniformLocation(shaderProgram, "textureObj")
+    light_angle = glGetUniformLocation(shaderProgram, "angle")
     glUseProgram(shaderProgram)
     glUniform1i(texLocation, 0)
+    glUniform1f(light_angle, 0)
     
 def clear(color=(0, 0, 0)):
     pygame.display.flip()
@@ -142,7 +145,6 @@ def picture_exchange():
     width = screen.get_width()
     height = screen.get_height()
     glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData)
-
 
 def render():
     picture_exchange()
@@ -169,6 +171,7 @@ def rotatewindow():
     spd_collect = 0
     angle_spd = 2
     flip_spd = 10
+    move_spd = 0.1
     quick_save = False
     has_save = False
     global save_matrix
@@ -225,7 +228,15 @@ def rotatewindow():
                 elif e.key == pygame.K_x:
                     glRotatef(flip_spd, 0, 0, -1)
 
-                
+                elif e.key == pygame.K_RIGHT:
+                    glTranslatef(move_spd, 0, 0)
+                elif e.key == pygame.K_LEFT:
+                    glTranslatef(-move_spd, 0, 0)
+                elif e.key == pygame.K_UP:
+                    glTranslatef(0, move_spd, 0)
+                elif e.key == pygame.K_DOWN:
+                    glTranslatef(0, -move_spd, 0)
+
                 elif e.key == pygame.K_0:
                     if not(quick_save):
                         glPushMatrix()
@@ -241,7 +252,7 @@ def rotatewindow():
                 elif e.key == pygame.K_3:
                     if has_save:
                         glLoadMatrixf(save_matrix)
-                        has_save = False
+                        # has_save = False
                 elif e.key == pygame.K_1:
                     glLoadMatrixf(correct_matrix)
 
@@ -293,9 +304,6 @@ def rotatewindow():
         glCullFace(GL_FRONT)
         screen.blit(img, img_rect)
         render()
-
-        # render()
-        # clear()
 
 if __name__ == '__main__':
     move = False
